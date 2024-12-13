@@ -21,7 +21,7 @@ class WebScraper:
         # Initialize the driver
         self.service = Service(ChromeDriverManager().install())
         
-    def scrape_website(self, url: str) -> Dict[str, str]:  # Removed async
+    def scrape_website(self, url: str) -> Dict[str, str]:  
         try:
             # Create a new driver instance
             driver = webdriver.Chrome(
@@ -48,11 +48,12 @@ class WebScraper:
                     'headings': self._get_headings(driver),
                     'meta_description': self._get_meta_description(driver)
                 }
+
+                print("Scraped content: \n", content, "\n")
                 
                 return content
                 
             finally:
-                # Always quit the driver
                 driver.quit()
                 
         except Exception as e:

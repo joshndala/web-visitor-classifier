@@ -1,15 +1,28 @@
-import React from 'react';
-import { Card, CardContent, Typography, CircularProgress, Box } from '@mui/material';
+import React, { useState } from 'react';
+import { 
+  Card, CardContent, Typography, CircularProgress, Box, RadioGroup, FormControlLabel, Radio, Button
+} from '@mui/material';
+import { AnalysisResponse } from '../../api/types';
 
 interface ResultsDisplayProps {
   isLoading?: boolean;
-  results?: any;
+  results?: AnalysisResponse;
+  onSubmitAnswer?: (answer: string) => void;
 }
 
 const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ 
   isLoading,
-  results 
+  results,
+  onSubmitAnswer
 }) => {
+  const [selectedOption, setSelectedOption] = useState<string>('');
+
+  const handleSubmit = () => {
+    if (selectedOption && onSubmitAnswer) {
+      onSubmitAnswer(selectedOption);
+    }
+  };
+
   if (isLoading) {
     return (
       <Box maxWidth="md" mx="auto" mt={4}>
@@ -32,14 +45,34 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     <Box maxWidth="md" mx="auto" mt={4}>
       <Card variant="outlined" className="border-primary">
         <CardContent>
-          <Typography variant="h5" component="div" gutterBottom>
-            Analysis Results
-          </Typography>
-          <Box className="bg-secondary p-2 rounded overflow-auto">
-            <Typography variant="body2" component="pre">
-              {JSON.stringify(results, null, 2)}
-            </Typography>
-          </Box>
+          {results?.questions && (
+            <Box>
+              <Typography variant="h6" gutterBottom>
+                {results.questions.question}
+              </Typography>
+              <RadioGroup
+                value={selectedOption}
+                onChange={(e) => setSelectedOption(e.target.value)}
+              >
+                {results.questions.options.map((option, index) => (
+                  <FormControlLabel
+                    key={index}
+                    value={option}
+                    control={<Radio />}
+                    label={option}
+                  />
+                ))}
+              </RadioGroup>
+              <Button
+                variant="contained"
+                onClick={handleSubmit}
+                disabled={!selectedOption}
+                className="bg-primary text-accent mt-4"
+              >
+                Submit Answer
+              </Button>
+            </Box>
+          )}
         </CardContent>
       </Card>
     </Box>

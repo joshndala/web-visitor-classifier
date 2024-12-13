@@ -1,20 +1,29 @@
 import React, { useState } from 'react';
 import { TextField, Button, Card, CardContent, Typography, CircularProgress, Box } from '@mui/material';
+import { analyzeWebsite } from '../../api/analysis';
+import { AnalysisResponse } from '../../api/types';
 
 interface URLInputProps {
-  onAnalyze: (url: string) => void;
+  onAnalyze: (results: AnalysisResponse) => void;
   isLoading?: boolean;
+  onError: (error: string) => void;
 }
 
 const URLInput: React.FC<URLInputProps> = ({ 
   onAnalyze, 
-  isLoading = false 
+  isLoading = false,
+  onError 
 }) => {
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState('');  // This was missing!
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onAnalyze(url);
+    try {
+      const results = await analyzeWebsite(url);
+      onAnalyze(results);
+    } catch (error) {
+      onError(error instanceof Error ? error.message : 'Failed to analyze website');
+    }
   };
 
   return (
