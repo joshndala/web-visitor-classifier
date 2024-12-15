@@ -1,29 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Card, CardContent, Typography, CircularProgress, Box, RadioGroup, FormControlLabel, Radio, Button
 } from '@mui/material';
 import { AnalysisResponse } from '../../api/types';
 
 interface ResultsDisplayProps {
-  isLoading?: boolean;
   results?: AnalysisResponse;
   onSubmitAnswer?: (answer: string) => void;
 }
 
 const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ 
-  isLoading,
   results,
   onSubmitAnswer
 }) => {
   const [selectedOption, setSelectedOption] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const handleSubmit = () => {
     if (selectedOption && onSubmitAnswer) {
+      setIsSubmitting(true);
       onSubmitAnswer(selectedOption);
     }
   };
 
-  if (isLoading) {
+  useEffect(() => {
+    if (isSubmitting && results) {
+      setIsSubmitting(false);
+    }
+  }, [results, isSubmitting]);
+
+  if (isSubmitting) {
     return (
       <Box maxWidth="md" mx="auto" mt={4}>
         <Card variant="outlined" className="border-primary">

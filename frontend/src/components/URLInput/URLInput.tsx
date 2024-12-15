@@ -5,24 +5,26 @@ import { AnalysisResponse } from '../../api/types';
 
 interface URLInputProps {
   onAnalyze: (results: AnalysisResponse) => void;
-  isLoading?: boolean;
   onError: (error: string) => void;
 }
 
 const URLInput: React.FC<URLInputProps> = ({ 
   onAnalyze, 
-  isLoading = false,
   onError 
 }) => {
-  const [url, setUrl] = useState('');  // This was missing!
+  const [url, setUrl] = useState('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const results = await analyzeWebsite(url);
       onAnalyze(results);
     } catch (error) {
       onError(error instanceof Error ? error.message : 'Failed to analyze website');
+    } finally {
+      setIsLoading(false);
     }
   };
 

@@ -8,19 +8,15 @@ import theme from './styles/theme';
 import { AnalysisResponse } from './api/types';
 
 const App: React.FC = () => {
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [results, setResults] = useState<AnalysisResponse | undefined>();
   const [error, setError] = useState<string | undefined>();
 
   const handleAnalyze = async (results: AnalysisResponse) => {
-    setIsAnalyzing(true);
     setError(undefined);
     try {
       setResults(results);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setIsAnalyzing(false);
     }
   };
 
@@ -40,11 +36,9 @@ const App: React.FC = () => {
         <div className="w-full flex flex-col items-center space-y-8">
           <URLInput 
             onAnalyze={handleAnalyze} 
-            isLoading={isAnalyzing}
             onError={setError}
           />
           <ResultsDisplay 
-            isLoading={isAnalyzing}
             results={results}
             onSubmitAnswer={handleSubmitAnswer}
           />
